@@ -8,22 +8,39 @@
 #include <string.h>
 #include "help.h"
 #define PORT 2040
+#define Stream_Size 1024
 
 using namespace std;
 
 void init(int&, int&, struct sockaddr_in&, const char*);
+string get_argstr(int&, char*[]);
+void check_args(int&, char*[]);
+char* get_request(string&, int&);
+
 int main(int argc, char* argv[])
 {
+    //socket
     int socket_fd, connection;
-    const int port = 2040;
-    int buffersize;
-    //char buffer[buffersize];
     struct sockaddr_in server_address;
     const char *ipaddress = "127.0.0.1";
-
+    //args
+    string args = get_argstr(argc, argv);
+    check_args(argc, argv);
+    int requestsize = args.length() + 1;
     //init
     init(socket_fd, connection, server_address, ipaddress);
 
+    //send
+    const char* test = args.c_str();
+    send(socket_fd, test, requestsize, 0);
+    //recieve
+    int responsesize = Stream_Size;
+    char response[responsesize];
+    recv(socket_fd, response, responsesize, 0);
+    cout << response << endl;
+}
+string get_argstr(int& argc, char* argv[])
+{
     //get arguments
     string args;
     for(int i = 1; i < argc; i++)
@@ -31,29 +48,23 @@ int main(int argc, char* argv[])
         args += argv[i];
         args += ' ';
     }
-
-    //string to buffer[]
-    int length = args.length();
-    char request[length +1];
-    for(int i = 0; i < length; i++)
+    return args;
+}
+void check_args(int& argc, char* argv[])
+{
+    //check if args are empty
+    if(argc <= 1)
     {
-        request[i] = args[i];
+        cout << "\nInvalid arguments" << endl
+            << help_text << endl;
+        exit(0);
     }
-    buffersize = sizeof(request);
-
     //check if user needs help
     if(strcmp(argv[1], "help") == 0)
     {
         cout << help_text << endl;
         exit(0);
     }
-
-    //send args
-    send(socket_fd, request, buffersize, 0);
-    char response[1024];
-    buffersize = sizeof(response);
-    recv(socket_fd, response, buffersize, 0);
-    cout << response << endl;
 }
 void init(int& socket_fd, int& connection, struct sockaddr_in& server_address, const char* ipaddress)
 {
