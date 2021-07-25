@@ -1,0 +1,15 @@
+# depslib dependency file v1.0
+1627230262 source:/home/leroy/Projekte/SmartGardenClient/main.cpp
+	<iostream>
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<stdlib.h>
+	<unistd.h>
+	<arpa/inet.h>
+	<string.h>
+	"help.h"
+
+1627229820 /home/leroy/Projekte/SmartGardenClient/help.h
+	<string>
+
